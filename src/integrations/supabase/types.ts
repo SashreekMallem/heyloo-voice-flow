@@ -14,7 +14,390 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agent_requests: {
+        Row: {
+          admin_notes: string | null
+          agent_id: string | null
+          completed_at: string | null
+          created_at: string
+          customer_id: string
+          description: string
+          id: string
+          request_type: string
+          requirements: Json | null
+          status: Database["public"]["Enums"]["request_status"] | null
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          agent_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id: string
+          description: string
+          id?: string
+          request_type: string
+          requirements?: Json | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          agent_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string
+          id?: string
+          request_type?: string
+          requirements?: Json | null
+          status?: Database["public"]["Enums"]["request_status"] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_requests_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "voice_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      billing_records: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          cost_per_minute: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          paid_at: string | null
+          payment_method: string | null
+          stripe_invoice_id: string | null
+          total_amount: number
+          total_minutes: number | null
+        }
+        Insert: {
+          billing_period_end: string
+          billing_period_start: string
+          cost_per_minute?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          stripe_invoice_id?: string | null
+          total_amount: number
+          total_minutes?: number | null
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          cost_per_minute?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          paid_at?: string | null
+          payment_method?: string | null
+          stripe_invoice_id?: string | null
+          total_amount?: number
+          total_minutes?: number | null
+        }
+        Relationships: []
+      }
+      call_analytics: {
+        Row: {
+          agent_id: string | null
+          call_duration: number | null
+          call_end_time: string | null
+          call_id: string | null
+          call_start_time: string
+          call_status: Database["public"]["Enums"]["call_status"] | null
+          caller_phone: string | null
+          created_at: string
+          customer_id: string
+          id: string
+          total_cost: number | null
+          transcript: string | null
+        }
+        Insert: {
+          agent_id?: string | null
+          call_duration?: number | null
+          call_end_time?: string | null
+          call_id?: string | null
+          call_start_time: string
+          call_status?: Database["public"]["Enums"]["call_status"] | null
+          caller_phone?: string | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          total_cost?: number | null
+          transcript?: string | null
+        }
+        Update: {
+          agent_id?: string | null
+          call_duration?: number | null
+          call_end_time?: string | null
+          call_id?: string | null
+          call_start_time?: string
+          call_status?: Database["public"]["Enums"]["call_status"] | null
+          caller_phone?: string | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          total_cost?: number | null
+          transcript?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "call_analytics_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "voice_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_items: {
+        Row: {
+          agent_id: string | null
+          category: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          id: string
+          is_available: boolean | null
+          item_name: string
+          price: number | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          category?: string | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          id?: string
+          is_available?: boolean | null
+          item_name: string
+          price?: number | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          category?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean | null
+          item_name?: string
+          price?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "voice_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      monthly_usage: {
+        Row: {
+          average_call_duration: number | null
+          created_at: string
+          customer_id: string
+          id: string
+          missed_calls: number | null
+          month: number
+          success_rate: number | null
+          successful_calls: number | null
+          total_calls: number | null
+          total_cost: number | null
+          total_minutes: number | null
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          average_call_duration?: number | null
+          created_at?: string
+          customer_id: string
+          id?: string
+          missed_calls?: number | null
+          month: number
+          success_rate?: number | null
+          successful_calls?: number | null
+          total_calls?: number | null
+          total_cost?: number | null
+          total_minutes?: number | null
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          average_call_duration?: number | null
+          created_at?: string
+          customer_id?: string
+          id?: string
+          missed_calls?: number | null
+          month?: number
+          success_rate?: number | null
+          successful_calls?: number | null
+          total_calls?: number | null
+          total_cost?: number | null
+          total_minutes?: number | null
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          business_name: string | null
+          contact_name: string | null
+          created_at: string
+          id: string
+          industry: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          business_name?: string | null
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          business_name?: string | null
+          contact_name?: string | null
+          created_at?: string
+          id?: string
+          industry?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      support_tickets: {
+        Row: {
+          assigned_to: string | null
+          created_at: string
+          customer_id: string
+          description: string
+          id: string
+          priority: Database["public"]["Enums"]["ticket_priority"] | null
+          resolved_at: string | null
+          status: Database["public"]["Enums"]["ticket_status"] | null
+          subject: string
+          ticket_number: string
+          updated_at: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          created_at?: string
+          customer_id: string
+          description: string
+          id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"] | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"] | null
+          subject: string
+          ticket_number: string
+          updated_at?: string
+        }
+        Update: {
+          assigned_to?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string
+          id?: string
+          priority?: Database["public"]["Enums"]["ticket_priority"] | null
+          resolved_at?: string | null
+          status?: Database["public"]["Enums"]["ticket_status"] | null
+          subject?: string
+          ticket_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      voice_agents: {
+        Row: {
+          agent_name: string
+          agent_personality: string | null
+          created_at: string
+          customer_id: string
+          greeting_message: string | null
+          id: string
+          language: string | null
+          status: Database["public"]["Enums"]["agent_status"] | null
+          updated_at: string
+          vapi_agent_id: string | null
+          voice_type: string | null
+        }
+        Insert: {
+          agent_name: string
+          agent_personality?: string | null
+          created_at?: string
+          customer_id: string
+          greeting_message?: string | null
+          id?: string
+          language?: string | null
+          status?: Database["public"]["Enums"]["agent_status"] | null
+          updated_at?: string
+          vapi_agent_id?: string | null
+          voice_type?: string | null
+        }
+        Update: {
+          agent_name?: string
+          agent_personality?: string | null
+          created_at?: string
+          customer_id?: string
+          greeting_message?: string | null
+          id?: string
+          language?: string | null
+          status?: Database["public"]["Enums"]["agent_status"] | null
+          updated_at?: string
+          vapi_agent_id?: string | null
+          voice_type?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -28,9 +411,22 @@ export type Database = {
         }
         Returns: undefined
       }
+      get_user_role: {
+        Args: { user_id?: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      is_admin: {
+        Args: { user_id?: string }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      agent_status: "active" | "inactive" | "pending" | "training"
+      app_role: "customer" | "admin" | "super_admin"
+      call_status: "completed" | "missed" | "failed" | "in_progress"
+      request_status: "pending" | "in_progress" | "completed" | "rejected"
+      ticket_priority: "low" | "medium" | "high" | "urgent"
+      ticket_status: "open" | "in_progress" | "resolved" | "closed"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -157,6 +553,13 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      agent_status: ["active", "inactive", "pending", "training"],
+      app_role: ["customer", "admin", "super_admin"],
+      call_status: ["completed", "missed", "failed", "in_progress"],
+      request_status: ["pending", "in_progress", "completed", "rejected"],
+      ticket_priority: ["low", "medium", "high", "urgent"],
+      ticket_status: ["open", "in_progress", "resolved", "closed"],
+    },
   },
 } as const

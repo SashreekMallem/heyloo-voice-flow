@@ -1,0 +1,294 @@
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Plus, HelpCircle, Clock, CheckCircle, XCircle } from 'lucide-react';
+
+interface SupportTicket {
+  id: string;
+  ticket_number: string;
+  subject: string;
+  description: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  created_at: string;
+  updated_at: string;
+}
+
+export const SupportTickets = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const [formData, setFormData] = useState({
+    subject: '',
+    description: '',
+    priority: 'medium' as const,
+  });
+
+  useEffect(() => {
+    fetchTickets();
+  }, [user]);
+
+  const fetchTickets = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('customer_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTickets(data || []);
+    } catch (error) {
+      console.error('Error fetching tickets:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitTicket = async () => {
+    if (!user) return;
+
+    setSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from('support_tickets')
+        .insert({
+          customer_id: user.id,
+          subject: formData.subject,
+          description: formData.description,
+          priority: formData.priority as 'low' | 'medium' | 'high' | 'urgent',
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: 'Ticket created',
+        description: 'Your support ticket has been submitted successfully.',
+      });
+
+      setDialogOpen(false);
+      setFormData({
+        subject: '',
+        description: '',
+        priority: 'medium',
+      });
+      fetchTickets();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'open':
+        return <Clock className="h-4 w-4 text-blue-500" />;
+      case 'in_progress':
+        return <Clock className="h-4 w-4 text-yellow-500" />;
+      case 'resolved':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'closed':
+        return <XCircle className="h-4 w-4 text-gray-500" />;
+      default:
+        return <Clock className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'low':
+        return 'bg-green-100 text-green-800';
+      case 'medium':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'high':
+        return 'bg-orange-100 text-orange-800';
+      case 'urgent':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <Card className="animate-pulse">
+          <CardContent className="p-6">
+            <div className="h-32 bg-muted rounded" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-2xl font-bold">Support Tickets</h3>
+          <p className="text-muted-foreground">Get help with your voice AI agents</p>
+        </div>
+        
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center space-x-2">
+              <Plus className="h-4 w-4" />
+              <span>New Ticket</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Create Support Ticket</DialogTitle>
+              <DialogDescription>
+                Describe your issue and we'll help you resolve it
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="subject">Subject</Label>
+                <Input
+                  id="subject"
+                  placeholder="Brief description of the issue"
+                  value={formData.subject}
+                  onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="priority">Priority</Label>
+                <Select value={formData.priority} onValueChange={(value) => 
+                  setFormData(prev => ({ ...prev, priority: value as 'low' | 'medium' | 'high' | 'urgent' }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="description">Description</Label>
+                <Textarea
+                  id="description"
+                  placeholder="Please provide detailed information about your issue..."
+                  value={formData.description}
+                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  className="min-h-[120px]"
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button onClick={handleSubmitTicket} disabled={submitting}>
+                Submit Ticket
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* Support Resources */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle>Quick Help</CardTitle>
+          <CardDescription>Common questions and resources</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="p-4 bg-muted/30 rounded-lg">
+              <h4 className="font-medium mb-2">Getting Started</h4>
+              <p className="text-sm text-muted-foreground">
+                Learn how to set up and configure your first voice agent
+              </p>
+            </div>
+            <div className="p-4 bg-muted/30 rounded-lg">
+              <h4 className="font-medium mb-2">Voice Customization</h4>
+              <p className="text-sm text-muted-foreground">
+                Customize your agent's voice, personality, and responses
+              </p>
+            </div>
+            <div className="p-4 bg-muted/30 rounded-lg">
+              <h4 className="font-medium mb-2">Billing Questions</h4>
+              <p className="text-sm text-muted-foreground">
+                Understanding usage charges and billing cycles
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tickets List */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle>Your Tickets</CardTitle>
+          <CardDescription>Track the status of your support requests</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {tickets.length === 0 ? (
+            <div className="text-center py-8 text-muted-foreground">
+              <HelpCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
+              <p>No support tickets yet</p>
+              <p className="text-sm">Create a ticket if you need help</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {tickets.map((ticket) => (
+                <Card key={ticket.id} className="border">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="space-y-2 flex-1">
+                        <div className="flex items-center space-x-3">
+                          {getStatusIcon(ticket.status)}
+                          <h4 className="font-medium">{ticket.subject}</h4>
+                          <span className={`px-2 py-1 text-xs rounded-full capitalize ${getPriorityColor(ticket.priority)}`}>
+                            {ticket.priority}
+                          </span>
+                          <span className="px-2 py-1 text-xs rounded-full bg-muted capitalize">
+                            {ticket.status.replace('_', ' ')}
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">#{ticket.ticket_number}</p>
+                        <p className="text-sm text-muted-foreground">{ticket.description}</p>
+                      </div>
+                      <div className="text-sm text-muted-foreground ml-4">
+                        <p>Created: {new Date(ticket.created_at).toLocaleDateString()}</p>
+                        <p>Updated: {new Date(ticket.updated_at).toLocaleDateString()}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
