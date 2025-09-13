@@ -18,11 +18,14 @@ export type Database = {
         Row: {
           admin_notes: string | null
           agent_id: string | null
+          business_info: Json | null
+          business_type: string | null
           completed_at: string | null
           created_at: string
           customer_id: string
           description: string
           id: string
+          integration_needs: Json | null
           request_type: string
           requirements: Json | null
           status: Database["public"]["Enums"]["request_status"] | null
@@ -31,11 +34,14 @@ export type Database = {
         Insert: {
           admin_notes?: string | null
           agent_id?: string | null
+          business_info?: Json | null
+          business_type?: string | null
           completed_at?: string | null
           created_at?: string
           customer_id: string
           description: string
           id?: string
+          integration_needs?: Json | null
           request_type: string
           requirements?: Json | null
           status?: Database["public"]["Enums"]["request_status"] | null
@@ -44,11 +50,14 @@ export type Database = {
         Update: {
           admin_notes?: string | null
           agent_id?: string | null
+          business_info?: Json | null
+          business_type?: string | null
           completed_at?: string | null
           created_at?: string
           customer_id?: string
           description?: string
           id?: string
+          integration_needs?: Json | null
           request_type?: string
           requirements?: Json | null
           status?: Database["public"]["Enums"]["request_status"] | null
@@ -155,6 +164,53 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "voice_agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_subscriptions: {
+        Row: {
+          billing_cycle: string
+          created_at: string
+          current_period_end: string
+          current_period_start: string
+          customer_id: string
+          id: string
+          plan_id: string
+          status: string
+          stripe_subscription_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          billing_cycle?: string
+          created_at?: string
+          current_period_end: string
+          current_period_start: string
+          customer_id: string
+          id?: string
+          plan_id: string
+          status?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          billing_cycle?: string
+          created_at?: string
+          current_period_end?: string
+          current_period_start?: string
+          customer_id?: string
+          id?: string
+          plan_id?: string
+          status?: string
+          stripe_subscription_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_subscriptions_plan_id_fkey"
+            columns: ["plan_id"]
+            isOneToOne: false
+            referencedRelation: "subscription_plans"
             referencedColumns: ["id"]
           },
         ]
@@ -290,6 +346,45 @@ export type Database = {
         }
         Relationships: []
       }
+      subscription_plans: {
+        Row: {
+          created_at: string
+          description: string | null
+          features: Json
+          id: string
+          is_active: boolean
+          limits: Json
+          name: string
+          price_annual: number
+          price_monthly: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          limits?: Json
+          name: string
+          price_annual: number
+          price_monthly: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          features?: Json
+          id?: string
+          is_active?: boolean
+          limits?: Json
+          name?: string
+          price_annual?: number
+          price_monthly?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       support_tickets: {
         Row: {
           assigned_to: string | null
@@ -329,6 +424,36 @@ export type Database = {
           subject?: string
           ticket_number?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      usage_tracking: {
+        Row: {
+          created_at: string
+          customer_id: string
+          feature_name: string
+          id: string
+          reset_date: string
+          updated_at: string
+          usage_count: number
+        }
+        Insert: {
+          created_at?: string
+          customer_id: string
+          feature_name: string
+          id?: string
+          reset_date: string
+          updated_at?: string
+          usage_count?: number
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string
+          feature_name?: string
+          id?: string
+          reset_date?: string
+          updated_at?: string
+          usage_count?: number
         }
         Relationships: []
       }

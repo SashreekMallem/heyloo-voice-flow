@@ -41,13 +41,16 @@ export const CustomerDashboard = () => {
           <CustomerAnalytics />
         </TabsContent>
 
-        <TabsContent value="agents">
-          <AgentRequests />
-        </TabsContent>
+            <TabsContent value="agents">
+              <EnhancedAgentRequests />
+            </TabsContent>
 
-        <TabsContent value="menu">
-          <MenuManagement />
-        </TabsContent>
+            <TabsContent value="menu">
+              <EnhancedMenuManagement />
+            </TabsContent>
+            <TabsContent value="billing">
+              <SubscriptionManagement />
+            </TabsContent>
 
         <TabsContent value="billing">
           <BillingSection />
