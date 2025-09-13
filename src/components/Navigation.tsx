@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { Menu, X, Mic2 } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -38,12 +39,16 @@ export const Navigation = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button className={buttonVariants({ variant: "ghost_premium" })}>
-              Sign In
-            </Button>
-            <Button className={buttonVariants({ variant: "hero" })}>
-              Start Free Trial
-            </Button>
+            <Link to="/auth">
+              <Button className={buttonVariants({ variant: "ghost_premium" })}>
+                Sign In
+              </Button>
+            </Link>
+            <Link to="/auth">
+              <Button className={buttonVariants({ variant: "hero" })}>
+                Start Free Trial
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,12 +77,16 @@ export const Navigation = () => {
                 Contact
               </a>
               <div className="flex flex-col space-y-2 pt-4">
-                <Button className={buttonVariants({ variant: "ghost_premium", size: "sm" })}>
-                  Sign In
-                </Button>
-                <Button className={buttonVariants({ variant: "hero", size: "sm" })}>
-                  Start Free Trial
-                </Button>
+                <Link to="/auth">
+                  <Button className={buttonVariants({ variant: "ghost_premium", size: "sm" })}>
+                    Sign In
+                  </Button>
+                </Link>
+                <Link to="/auth">
+                  <Button className={buttonVariants({ variant: "hero", size: "sm" })}>
+                    Start Free Trial
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
